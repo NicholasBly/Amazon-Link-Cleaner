@@ -26,7 +26,7 @@ The extension automatically cleans Amazon product page URLs when the page loads.
 
 - The extension runs automatically on Amazon product pages and does not require user interaction.
 
-- If you encounter any issues or have suggestions for improvements, feel free to [open an issue](https://github.com/yourusername/amazon-link-cleaner-extension/issues).
+- If you encounter any issues or have suggestions for improvements, feel free to [open an issue](https://github.com/NicholasBly/amazon-link-cleaner-extension/issues).
 
 ## License
 
