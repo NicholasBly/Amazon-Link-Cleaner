@@ -1,8 +1,3 @@
-# Amazon-Link-Cleaner
-Remove unnecessary parts from Amazon URLs on Chromium web browsers
-
-# Amazon Link Cleaner Chrome Extension
-
 # Amazon Link Cleaner Chrome Extension
 
 ## Overview
