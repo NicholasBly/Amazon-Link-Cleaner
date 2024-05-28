@@ -23,6 +23,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Intercept form submissions to clean search URLs before navigating
+  document.addEventListener('submit', function(event) {
+    const form = event.target;
+    if (form && form.action.includes('/s')) {
+      event.preventDefault();
+      const formData = new FormData(form);
+      const searchParams = new URLSearchParams(formData);
+      const query = searchParams.get('k');
+      if (query) {
+        const cleanedUrl = cleanSearchUrl(form.action + '?' + searchParams.toString());
+        window.location.href = cleanedUrl;
+      } else {
+        form.submit();
+      }
+    }
+  }, true);  // Capture event before it bubbles up
+
+  // Intercept enter key press in the search input field
+  document.addEventListener('keydown', function(event) {
+    if (event.target.matches('input[type="text"][name="field-keywords"]') && event.key === 'Enter') {
+      event.preventDefault();
+      const form = event.target.closest('form');
+      if (form) {
+        const formData = new FormData(form);
+        const searchParams = new URLSearchParams(formData);
+        const query = searchParams.get('k');
+        if (query) {
+          const cleanedUrl = cleanSearchUrl(form.action + '?' + searchParams.toString());
+          window.location.href = cleanedUrl;
+        }
+      }
+    }
+  }, true);  // Capture event before it bubbles up
+
   // Observe changes to the document to handle dynamically loaded links
   const observer = new MutationObserver(() => {
     cleanAmazonLinks();
@@ -36,11 +70,13 @@ function cleanAmazonLink() {
   if (currentUrl.includes('/dp/')) {
     const asinMatch = currentUrl.match(/\/dp\/([A-Z0-9]{10})/i);
     if (asinMatch && asinMatch[1]) {
-      const cleanedUrl = "https://www.amazon.com/dp/" + asinMatch[1] + "/";
+      let cleanedUrl = "https://www.amazon.com/dp/" + asinMatch[1] + "/";
+      cleanedUrl = cleanThParameter(cleanedUrl);
       history.replaceState({}, document.title, cleanedUrl);
     }
   } else if (currentUrl.includes('/s?k=')) {
-    const cleanedUrl = cleanSearchUrl(currentUrl);
+    let cleanedUrl = cleanSearchUrl(currentUrl);
+    cleanedUrl = cleanThParameter(cleanedUrl);
     history.replaceState({}, document.title, cleanedUrl);
   }
 }
@@ -51,11 +87,13 @@ function cleanAmazonLinks() {
     if (link.href.includes('/dp/')) {
       const asinMatch = link.href.match(/\/dp\/([A-Z0-9]{10})/i);
       if (asinMatch && asinMatch[1]) {
-        const cleanedUrl = "https://www.amazon.com/dp/" + asinMatch[1] + "/";
+        let cleanedUrl = "https://www.amazon.com/dp/" + asinMatch[1] + "/";
+        cleanedUrl = cleanThParameter(cleanedUrl);
         link.href = cleanedUrl;
       }
     } else if (link.href.includes('/s?k=')) {
-      const cleanedUrl = cleanSearchUrl(link.href);
+      let cleanedUrl = cleanSearchUrl(link.href);
+      cleanedUrl = cleanThParameter(cleanedUrl);
       link.href = cleanedUrl;
     }
   });
@@ -67,5 +105,11 @@ function cleanSearchUrl(url) {
   params.delete('crid');
   params.delete('sprefix');
   params.delete('ref');
-  return urlObj.origin + urlObj.pathname + '?' + params.toString();
+  return urlObj.origin + urlObj.pathname + '?' + params.toString().replace(/&$/, '');
+}
+
+function cleanThParameter(url) {
+  const urlObj = new URL(url);
+  urlObj.searchParams.delete('th');
+  return urlObj.toString();
 }

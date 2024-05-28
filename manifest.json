@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Amazon Link Cleaner",
-  "version": "1.0",
+  "version": "2.2",
   "description": "Remove unnecessary parts from Amazon URLs",
   "permissions": [
     "activeTab"
